@@ -1,4 +1,4 @@
-from models import User, Contact
+from models import User, Email, Phone
 from db import session
 import faker
 
@@ -6,20 +6,28 @@ import faker
 def create_user():
     fake_data = faker.Faker('uk-UA')
     for i in range(500):
+        address = fake_data.address()
         if i % 2:
-            user = User(first_name=fake_data.first_name_female(), last_name=fake_data.last_name_female())
+            first_name = fake_data.first_name_female()
+            last_name = fake_data.last_name_female()
+            user = User(first_name=first_name, last_name=last_name, address=address)
         else:
-            user = User(first_name=fake_data.first_name_male(), last_name=fake_data.last_name_male())
+            first_name = fake_data.first_name_male()
+            last_name = fake_data.last_name_male()
+            user = User(first_name=first_name, last_name=last_name, address=address)
         session.add(user)
         session.commit()
 
-        contact = Contact(
+        add_email = Email(
             user_id=user.id,
-            address=fake_data.address(),
-            phone=fake_data.phone_number(),
             email=fake_data.ascii_email())
-        session.add(contact)
-    session.commit()
+        add_phone = Phone(
+            user_id=user.id,
+            phone=fake_data.phone_number())
+        session.add(add_email)
+        session.add(add_phone)
+        session.commit()
+
 
 
 if __name__ == '__main__':
